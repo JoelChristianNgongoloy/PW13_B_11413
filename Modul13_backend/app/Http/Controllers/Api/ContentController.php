@@ -28,6 +28,7 @@ class ContentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    //ini yang di pake di My Videos
     public function showContentbyUser($id) {
         $user = User::find($id);
         if(!$user){
@@ -129,17 +130,11 @@ class ContentController extends Controller
             ],404);
         }
         if($request->hasFile('thumbnail')){
-            // kalau kalian membaca ini, ketahuilah bahwa gambar tidak akan bisa diupdate karena menggunakan method PUT ;)
-            // kalian bisa mengubahnya menjadi POST atau PATCH untuk mengupdate gambar
             $uploadFolder = 'contents';
             $image = $request->file('thumbnail');
             $image_uploaded_path = $image->store($uploadFolder, 'public');
             $uploadedImageResponse = basename($image_uploaded_path);
-
-            // hapus data thumbnail yang lama dari storage
             Storage::disk('public')->delete('contents/'.$content->thumbnail);
-
-            // set thumbnail yang baru
             $updateData['thumbnail'] = $uploadedImageResponse;
         }
 

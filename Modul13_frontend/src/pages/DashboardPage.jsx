@@ -1,10 +1,23 @@
 import { useEffect, useState } from "react";
-import { Alert, Col, Container, Row, Spinner, Stack } from "react-bootstrap";
+import {
+  Alert,
+  Col,
+  Container,
+  Row,
+  Spinner,
+  Stack,
+  Button,
+} from "react-bootstrap";
 import { GetAllContents } from "../api/apiContent";
 import { getThumbnail } from "../api";
+import { FaRegClock } from "react-icons/fa";
+import { createWatch } from "../api/apiWatch";
+import { toast } from "react-toastify";
+
 const DashboardPage = () => {
   const [contents, setContents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     setIsLoading(true);
     GetAllContents()
@@ -16,6 +29,20 @@ const DashboardPage = () => {
         console.log(err);
       });
   }, []);
+
+  const handleAddToWatchLater = (content) => {
+    console.log(content.id);
+    createWatch({"id_content": content.id})
+      .then((response) => {
+        console.log(response);
+        toast.success(response.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.warning((err));
+      });
+  };
+
   return (
     <Container className="mt-4">
       <Stack direction="horizontal" gap={3} className="mb-3">
@@ -36,8 +63,8 @@ const DashboardPage = () => {
         </div>
       ) : contents?.length > 0 ? (
         <Row>
-          {contents?.map((content) => (
-            <Col md={6} lg={4} className="mb-3" key={content.id}>
+          {contents?.map((content, index) => (
+            <Col md={6} lg={4} className="mb-3" key={index}>
               <div
                 className="card text-white"
                 style={{ aspectRatio: "16 / 9" }}
@@ -50,6 +77,14 @@ const DashboardPage = () => {
                 <div className="card-body">
                   <h5 className="card-title text-truncate">{content.title}</h5>
                   <p className="card-text">{content.description}</p>
+                </div>
+                <div style={{ justifyContent: "end", display: "flex" }}>
+                  <Button
+                    variant="success"
+                    onClick={() => handleAddToWatchLater(content)}
+                  >
+                    <FaRegClock className="mx-1 mb-1" />
+                  </Button>
                 </div>
               </div>
             </Col>
